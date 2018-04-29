@@ -1,5 +1,5 @@
 import csv
-import csv2
+import cv2
 import numpy as np
 
 # Load images paths from csv file
