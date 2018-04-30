@@ -27,9 +27,20 @@ for line in lines:
     measurement = float(line[3])
     measurements.append(measurement)
 
+# Data augmentation
+augmented_images, augmented_measurements = [], []
+
+for image, measurement in zip(images, measurements):
+    
+    augmented_images.append(image)
+    augmented_measurements.append(measurement)
+    
+    augmented_images.append(cv2.flip(image,1))
+    augmented_measurements.append(measurement * -1.0)
+
 # Convert inputs and labels as np array
-X_train = np.array(images)
-y_train = np.array(measurements)
+X_train = np.array(augmented_images)
+y_train = np.array(augmented_measurements)
 
 # Build network
 from keras.models import Sequential
