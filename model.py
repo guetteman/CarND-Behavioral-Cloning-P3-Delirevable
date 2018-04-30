@@ -16,16 +16,17 @@ images = []
 measurements = []
 
 for line in lines:
-    
-    source_path = line[0]
-    filename = source_path.split('/')[-1]
-    current_path = 'data/IMG/' + filename
-    
-    image = cv2.imread(current_path)
-    images.append(image)
+    for i in range(3):
 
-    measurement = float(line[3])
-    measurements.append(measurement)
+        source_path = line[i]
+        filename = source_path.split('/')[-1]
+        current_path = 'data/IMG/' + filename
+
+        image = cv2.imread(current_path)
+        images.append(image)
+
+        measurement = float(line[3])
+        measurements.append(measurement)
 
 # Data augmentation
 augmented_images, augmented_measurements = [], []
