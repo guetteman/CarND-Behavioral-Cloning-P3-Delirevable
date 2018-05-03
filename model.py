@@ -54,10 +54,15 @@ def augment_data(images, measurements):
     return augmented_images,augmented_measurements
 
 # Load images paths from csv file
-lines = load_data_from_csv('data/driving_log.csv')
+track1_lines = load_data_from_csv('data/driving_log.csv')
+track2_lines = load_data_from_csv('data1/driving_log.csv')
    
 # Fix images path to use in another machine like AWS
-images, measurements = get_images(lines, 'data/IMG/')
+track1_images, track1_measurements = get_images(track1_lines, 'data/IMG/')
+track2_images, track2_measurements = get_images(track2_lines, 'data/IMG/')
+
+images = track1_images + track2_images
+measurements = track1_measurements + track2_measurements
 
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
