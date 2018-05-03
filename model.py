@@ -28,9 +28,9 @@ for line in lines:
         if i == 0:
             measurement = float(line[3])
         elif i == 1:
-            measurement = float(line[3] + 0.2)
+            measurement = float(line[3]) + 0.2
         else:
-            measurement = float(line[3] - 0.2)
+            measurement = float(line[3]) - 0.2
 
         measurements.append(measurement)
 
