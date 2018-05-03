@@ -1,65 +1,49 @@
 import csv
 import cv2
-import sklearn
 import numpy as np
 
-def generator(samples, batch_size=32):
-    num_samples = len(samples)
-    while 1: # Loop forever so the generator never terminates
-        shuffle(samples)
-        for offset in range(0, num_samples, batch_size):
-            batch_samples = samples[offset:offset+batch_size]
+# Definitions
 
-            images = []
-            angles = []
-            for batch_sample in batch_samples:
-                name = './IMG/'+batch_sample[0].split('/')[-1]
-                center_image = cv2.imread(name)
-                center_angle = float(batch_sample[3])
-                images.append(center_image)
-                angles.append(center_angle)
+def load_data_from_csv(csv_file):
+    data = []    
 
-            # trim image to only see section with road
-            X_train = np.array(images)
-            y_train = np.array(angles)
-            yield sklearn.utils.shuffle(X_train, y_train)
+    with open(csv_file) as csvfile:
+        reader = csv.reader(csvfile)
 
-# Load images paths from csv file
-lines = [];
+        for line in reader:
+            data.append(line)
+        
+        return data
 
-with open('data/driving_log.csv') as csvfile:
-    reader = csv.reader(csvfile)
+def get_images(lines, base_path):
 
-    for line in reader:
-        lines.append(line)
+    images = []
+    measurements = []
+
+    for line in lines:
+        for i in range(3):
+
+            source_path = line[i]
+            filename = source_path.split('/')[-1]
+            current_path = base_path + filename
+
+            image = cv2.imread(current_path)
+            images.append(image)
+
+            # angle corrections
+            if i == 0:
+                measurement = float(line[3])
+            elif i == 1:
+                measurement = float(line[3]) + 0.2
+            else:
+                measurement = float(line[3]) - 0.2
+
+            measurements.append(measurement)
     
-# Fix images path to use in another machine like AWS
-images = []
-measurements = []
+    return images,measurements
 
-for line in lines:
-    for i in range(3):
-
-        source_path = line[i]
-        filename = source_path.split('/')[-1]
-        current_path = 'data/IMG/' + filename
-
-        image = cv2.imread(current_path)
-        images.append(image)
-
-        if i == 0:
-            measurement = float(line[3])
-        elif i == 1:
-            measurement = float(line[3]) + 0.2
-        else:
-            measurement = float(line[3]) - 0.2
-
-        measurements.append(measurement)
-
-# Data augmentation
-augmented_images, augmented_measurements = [], []
-
-for image, measurement in zip(images, measurements):
+def augment_data(images, measurements):
+    for image, measurement in zip(images, measurements):
     
     augmented_images.append(image)
     augmented_measurements.append(measurement)
@@ -67,15 +51,20 @@ for image, measurement in zip(images, measurements):
     augmented_images.append(cv2.flip(image,1))
     augmented_measurements.append(measurement * -1.0)
 
+    return augmented_images,augmented_measurements
+
+# Load images paths from csv file
+lines = load_data_from_csv('data/driving_log.csv')
+   
+# Fix images path to use in another machine like AWS
+images, measurements = get_images(lines, 'data/IMG/')
+
+# Data augmentation
+augmented_images, augmented_measurements = augment_data(images, measurements)
+
 # Convert inputs and labels as np array
 X_train = np.array(augmented_images)
 y_train = np.array(augmented_measurements)
-
-# compile and train the model using the generator function
-train_generator = generator(train_samples, batch_size=32)
-validation_generator = generator(validation_samples, batch_size=32)
-
-ch, row, col = 3, 80, 320  # Trimmed image format
 
 # Build network
 from keras.models import Sequential
@@ -84,7 +73,7 @@ from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 
 model = Sequential()
-model.add(Lambda(lambda x: x/127.5 - 1.,input_shape=(ch, row, col),output_shape=(ch, row, col)))
+model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160, 320, 3)))
 model.add(Cropping2D(cropping=((70,25),(0,0))))
 model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation='relu'))
 model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation='relu'))
@@ -98,9 +87,7 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit_generator(train_generator, samples_per_epoch= /
-            len(train_samples), validation_data=validation_generator, /
-            nb_val_samples=len(validation_samples), nb_epoch=5)
+model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=5)
 
 #Train model
 model.save('model.h5')
