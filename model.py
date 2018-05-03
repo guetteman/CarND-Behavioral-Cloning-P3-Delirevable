@@ -45,11 +45,11 @@ def get_images(lines, base_path):
 def augment_data(images, measurements):
     for image, measurement in zip(images, measurements):
     
-    augmented_images.append(image)
-    augmented_measurements.append(measurement)
-    
-    augmented_images.append(cv2.flip(image,1))
-    augmented_measurements.append(measurement * -1.0)
+        augmented_images.append(image)
+        augmented_measurements.append(measurement)
+        
+        augmented_images.append(cv2.flip(image,1))
+        augmented_measurements.append(measurement * -1.0)
 
     return augmented_images,augmented_measurements
 
