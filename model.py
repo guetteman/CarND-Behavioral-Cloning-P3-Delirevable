@@ -43,6 +43,9 @@ def get_images(lines, base_path):
     return images,measurements
 
 def augment_data(images, measurements):
+
+    augmented_images, augmented_measurements = [], []
+
     for image, measurement in zip(images, measurements):
     
         augmented_images.append(image)
@@ -59,7 +62,7 @@ track2_lines = load_data_from_csv('data1/driving_log.csv')
    
 # Fix images path to use in another machine like AWS
 track1_images, track1_measurements = get_images(track1_lines, 'data/IMG/')
-track2_images, track2_measurements = get_images(track2_lines, 'data/IMG/')
+track2_images, track2_measurements = get_images(track2_lines, 'data1/IMG/')
 
 images = track1_images + track2_images
 measurements = track1_measurements + track2_measurements
