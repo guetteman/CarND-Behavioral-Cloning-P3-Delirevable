@@ -76,13 +76,15 @@ def generator(images, measurements, batch_size=32):
 # Load images paths from csv file
 track1_lines = load_data_from_csv('data/driving_log.csv')
 track2_lines = load_data_from_csv('data1/driving_log.csv')
-   
+track3_lines = load_data_from_csv('data2/driving_log.csv')
+
 # Fix images path to use in another machine like AWS
 track1_images, track1_measurements = get_images(track1_lines, 'data/IMG/')
 track2_images, track2_measurements = get_images(track2_lines, 'data1/IMG/')
+track3_images, track3_measurements = get_images(track3_lines, 'data2/IMG/')
 
-images = track1_images + track2_images
-measurements = track1_measurements + track2_measurements
+images = track3_images + track2_images
+measurements = track3_measurements + track2_measurements
 
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
