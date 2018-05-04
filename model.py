@@ -101,7 +101,7 @@ from keras.layers.pooling import MaxPooling2D
 
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160, 320, 3)))
-model.add(Cropping2D(cropping=((70,25),(0,0))))
+model.add(Cropping2D(cropping=((50,20),(0,0))))
 model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation='relu'))
 model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation='relu'))
 model.add(Convolution2D(48, 5, 5, subsample=(2,2), activation='relu'))
@@ -118,7 +118,7 @@ model.compile(loss='mse', optimizer='adam')
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=3, verbose=1)
 
 #Train model
 model.save('model.h5')
