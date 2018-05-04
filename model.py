@@ -1,5 +1,8 @@
 import csv
 import cv2
+import sklearn
+from sklearn.utils import shuffle
+from sklearn.model_selection import train_test_split
 import numpy as np
 
 # Definitions
@@ -56,6 +59,20 @@ def augment_data(images, measurements):
 
     return augmented_images,augmented_measurements
 
+def generator(images, measurements, batch_size=32):
+    
+    num_samples = len(images)
+    
+    while 1:
+        for offset in range(0, num_samples, batch_size):
+            batch_images = images[offset:offset+batch_size]
+            batch_measurements = measurements[offset:offset+batch_size]
+
+            # trim image to only see section with road
+            X_train = np.array(batch_images)
+            y_train = np.array(batch_measurements)
+            yield sklearn.utils.shuffle(X_train, y_train)
+
 # Load images paths from csv file
 track1_lines = load_data_from_csv('data/driving_log.csv')
 track2_lines = load_data_from_csv('data1/driving_log.csv')
@@ -70,9 +87,11 @@ measurements = track1_measurements + track2_measurements
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
 
-# Convert inputs and labels as np array
-X_train = np.array(augmented_images)
-y_train = np.array(augmented_measurements)
+train_images, validation_images, train_measurements, validation_measurements = train_test_split(augmented_images, augmented_measurements, test_size=0.20)
+
+# compile and train the model using the generator function
+train_generator = generator(train_images, train_measurements, batch_size=32)
+validation_generator = generator(validation_images, validation_measurements, batch_size=32)
 
 # Build network
 from keras.models import Sequential
@@ -95,7 +114,8 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-model.fit(X_train, y_train, validation_split=0.2, shuffle=True, nb_epoch=5)
+model.fit_generator(train_generator, steps_per_epoch= len(train_images),
+validation_data=validation_generator, validation_steps=len(validation_images), epochs=5, verbose = 1)
 
 #Train model
 model.save('model.h5')
