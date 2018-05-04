@@ -98,6 +98,7 @@ from keras.models import Sequential
 from keras.layers import Flatten, Dense, Lambda, Cropping2D
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
+from keras.optimizers import Adam
 
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160, 320, 3)))
@@ -113,7 +114,7 @@ model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
-model.compile(loss='mse', optimizer='adam')
+model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 # model.fit_generator(train_generator, samples_per_epoch= len(train_images), validation_data=validation_generator, validation_steps=len(validation_images), nb_epoch=5, verbose = 1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
