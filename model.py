@@ -74,12 +74,12 @@ def generator(images, measurements, batch_size=32):
             yield sklearn.utils.shuffle(X_train, y_train)
 
 # Load images paths from csv file
-track1_lines = load_data_from_csv('data/driving_log.csv')
+#track1_lines = load_data_from_csv('data/driving_log.csv')
 track2_lines = load_data_from_csv('data1/driving_log.csv')
 track3_lines = load_data_from_csv('data2/driving_log.csv')
 
 # Fix images path to use in another machine like AWS
-track1_images, track1_measurements = get_images(track1_lines, 'data/IMG/')
+#track1_images, track1_measurements = get_images(track1_lines, 'data/IMG/')
 track2_images, track2_measurements = get_images(track2_lines, 'data1/IMG/')
 track3_images, track3_measurements = get_images(track3_lines, 'data2/IMG/')
 
@@ -121,7 +121,7 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=3, verbose=1)
 
 #Train model
 model.save('model.h5')
