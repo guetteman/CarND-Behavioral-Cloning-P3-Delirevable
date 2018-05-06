@@ -99,14 +99,14 @@ def augment_data(images, measurements):
         augmented_images.append(image)
         augmented_measurements.append(measurement)
         
-        augmented_image, augmented_measurement = random_flip(image, measurement)
+        #augmented_image, augmented_measurement = random_flip(image, measurement)
         
-        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        #augmented_image, augmented_measurement = random_translation(image, measurement, 5)
         
-        augmented_image = random_brightness(augmented_image)
+        #augmented_image = random_brightness(augmented_image)
 
-        augmented_images.append(augmented_image)
-        augmented_measurements.append(augmented_measurement)
+        #augmented_images.append(augmented_image)
+        #augmented_measurements.append(augmented_measurement)
 
     return augmented_images,augmented_measurements
 
@@ -160,12 +160,12 @@ model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
-model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
+model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-3))
 # model.fit_generator(train_generator, samples_per_epoch= len(train_images), validation_data=validation_generator, validation_steps=len(validation_images), nb_epoch=5, verbose = 1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=3, verbose=1)
 
 #Train model
 model.save('model.h5')
