@@ -66,7 +66,10 @@ def random_translation(image, measurement, trans_range):
         image = cv2.warpAffine(image,Trans_M,(cols,rows))
         measurement += tr_x * 0.002
     
-    return image, measurement
+        return image, measurement
+
+    else: 
+        return None, None
 
 def random_brightness(image):
     if np.random.rand() > 0.5 :
@@ -104,7 +107,8 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-        #augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
         #augmented_image = random_brightness(augmented_image)
 
