@@ -18,17 +18,13 @@ def load_data_from_csv(csv_file):
         
         return data
 
-def random_angle_correction(measurement, index):
-    if np.random.rand() > 0.5:
-        
-        if index == 1:
-            measurement = measurement + 0.2
-        elif index == 2:
-            measurement = measurement - 0.2
-        
-        return measurement  
-    else:
-        return measurement
+def angle_correction(measurement, index):
+    if index == 1:
+        measurement = measurement + 0.2
+    elif index == 2:
+        measurement = measurement - 0.2
+    
+    return measurement
 
 def get_images(lines, base_path):
 
@@ -46,7 +42,7 @@ def get_images(lines, base_path):
             images.append(image)
 
             # angle corrections
-            measurement = random_angle_correction(float(line[3]), i)
+            measurement = angle_correction(float(line[3]), i)
             measurements.append(measurement)
     
     return images,measurements
