@@ -52,7 +52,9 @@ def random_flip(image, measurement):
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
     
-    return image, measurement
+        return image, measurement
+    else:
+        return None, None
 
 def random_translation(image, measurement, trans_range):
     if np.random.rand() > 0.5:
@@ -100,7 +102,8 @@ def augment_data(images, measurements):
         augmented_measurements.append(measurement)
         
         augmented_image, augmented_measurement = random_flip(image, measurement)
-        
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
+
         #augmented_image, augmented_measurement = random_translation(image, measurement, 5)
         
         #augmented_image = random_brightness(augmented_image)
