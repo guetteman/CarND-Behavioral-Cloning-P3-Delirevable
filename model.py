@@ -18,6 +18,18 @@ def load_data_from_csv(csv_file):
         
         return data
 
+def random_angle_correction(measurement, index):
+    if np.random.rand() > 0.5:
+        # angle corrections
+        if index == 1:
+            measurement = measurement + 0.2
+        elif index == 2:
+            measurement = measurement - 0.2
+        else:
+            return measurement  
+    else:
+        return measurement
+
 def get_images(lines, base_path):
 
     images = []
@@ -34,16 +46,52 @@ def get_images(lines, base_path):
             images.append(image)
 
             # angle corrections
-            if i == 0:
-                measurement = float(line[3])
-            elif i == 1:
-                measurement = float(line[3]) + 0.2
-            else:
-                measurement = float(line[3]) - 0.2
-
+            measurement = random_angle_correction(float(line[3]), i)
             measurements.append(measurement)
     
     return images,measurements
+
+def random_flip(image, measurement):
+    if np.random.rand() > 0.5:
+        image = cv2.flip(image,1)
+        measurement = measurement * -1.0
+    
+    return image, measurement
+
+def random_translation(image, measurement, trans_range):
+    if np.random > 0.5:
+        tr_x = trans_range*np.random.uniform()-trans_range/2
+        tr_y = trans_range*np.random.uniform()-trans_range/2
+        Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
+
+        image = cv2.warpAffine(image,Trans_M,(cols,rows))
+        measurement += tr_x * 0.002
+    
+    return image, measurement
+
+def random_brightness(image):
+    if np.random.rand() > 0.5 :
+
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        
+        random_value = np.random.rand()
+
+        if random_value > 0.5:
+            ratio = 1 + random_value - 0.5
+        else:
+            ratio = random_value
+        
+        hsv[:,:,2] =  hsv[:,:,2] * ratio
+        image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+    
+    return image
+
+def add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements):
+    if augmented_image is not None:
+            augmented_images.append(augmented_image)
+            augmented_measurements.append(augmented_measurement)
+    
+    return augmented_images, augmented_measurements
 
 def augment_data(images, measurements):
 
@@ -54,8 +102,14 @@ def augment_data(images, measurements):
         augmented_images.append(image)
         augmented_measurements.append(measurement)
         
-        augmented_images.append(cv2.flip(image,1))
-        augmented_measurements.append(measurement * -1.0)
+        augmented_image, augmented_measurement = random_flip(image, measurement)
+        
+        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        
+        augmented_image = random_brightness(augmented_image)
+
+        augmented_images.append(augmented_image)
+        augmented_measurements.append(augmented_measurement)
 
     return augmented_images,augmented_measurements
 
