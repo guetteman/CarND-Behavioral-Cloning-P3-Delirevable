@@ -48,9 +48,9 @@ def get_images(lines, base_path):
     return images,measurements
 
 def random_flip(image, measurement):
-    if np.random.rand() > 0.5:
-        image = cv2.flip(image,1)
-        measurement = measurement * -1.0
+    #if np.random.rand() > 0.5:
+    image = cv2.flip(image,1)
+    measurement = measurement * -1.0
     
     return image, measurement
 
@@ -96,8 +96,8 @@ def augment_data(images, measurements):
 
     for image, measurement in zip(images, measurements):
     
-        #augmented_images.append(image)
-        #augmented_measurements.append(measurement)
+        augmented_images.append(image)
+        augmented_measurements.append(measurement)
         
         augmented_image, augmented_measurement = random_flip(image, measurement)
         
