@@ -20,13 +20,13 @@ def load_data_from_csv(csv_file):
 
 def random_angle_correction(measurement, index):
     if np.random.rand() > 0.5:
-        # angle corrections
+        
         if index == 1:
             measurement = measurement + 0.2
         elif index == 2:
             measurement = measurement - 0.2
-        else:
-            return measurement  
+        
+        return measurement  
     else:
         return measurement
 
@@ -59,7 +59,8 @@ def random_flip(image, measurement):
     return image, measurement
 
 def random_translation(image, measurement, trans_range):
-    if np.random > 0.5:
+    if np.random.rand() > 0.5:
+        rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
         Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
@@ -168,7 +169,7 @@ model.compile(loss='mean_squared_error', optimizer=Adam(lr=1.0e-4))
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=3, verbose=1)
 
 #Train model
 model.save('model.h5')
