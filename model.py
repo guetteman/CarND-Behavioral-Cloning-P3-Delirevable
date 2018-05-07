@@ -107,8 +107,8 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-       # augmented_image, augmented_measurement = random_translation(image, measurement, 5)
-        #augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
+        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
         #augmented_image = random_brightness(image)
         #augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
@@ -173,7 +173,7 @@ model.compile(loss='mse', optimizer='adam')
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=2, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=1, verbose=1)
 
 #Train model
 model.save('model.h5')
