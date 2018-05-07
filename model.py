@@ -48,7 +48,7 @@ def get_images(lines, base_path):
     return images,measurements
 
 def random_flip(image, measurement):
-    if np.random.rand() > 0.2:
+    if np.random.rand() > 0.4:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
@@ -173,7 +173,7 @@ model.compile(loss='mse', optimizer='adam')
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=2, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=3, verbose=1)
 
 #Train model
 model.save('model.h5')
