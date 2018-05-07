@@ -57,7 +57,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.7:
+    if np.random.rand() > 0.8:
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -72,7 +72,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image):
-    if np.random.rand() > 0.7:
+    if np.random.rand() > 0.8:
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
@@ -110,8 +110,8 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_translation(image, measurement, 5)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        #augmented_image = random_brightness(image)
-        #augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
+        augmented_image = random_brightness(image)
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
         #augmented_images.append(augmented_image)
         #augmented_measurements.append(augmented_measurement)
@@ -168,12 +168,12 @@ model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
-model.compile(loss='mse', optimizer='adam')
+model.compile(loss='mse', optimizer='adam', lr=1.0e-4)
 # model.fit_generator(train_generator, samples_per_epoch= len(train_images), validation_data=validation_generator, validation_steps=len(validation_images), nb_epoch=5, verbose = 1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=1, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
 
 #Train model
 model.save('model.h5')
