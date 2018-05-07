@@ -48,13 +48,13 @@ def get_images(lines, base_path):
     return images,measurements
 
 def random_flip(image, measurement):
-    #if np.random.rand() > 0.5:
-    image = cv2.flip(image,1)
-    measurement = measurement * -1.0
+    if np.random.rand() > 0.2:
+        image = cv2.flip(image,1)
+        measurement = measurement * -1.0
 
-    return image, measurement
-    #else:
-    #    return None, None
+        return image, measurement
+    else:
+        return None, None
 
 def random_translation(image, measurement, trans_range):
     if np.random.rand() > 0.7:
