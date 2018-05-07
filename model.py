@@ -49,44 +49,47 @@ def get_images(lines, base_path):
 
 def random_flip(image, measurement):
     #if np.random.rand() > 0.4:
-    image = cv2.flip(image,1)
-    measurement = measurement * -1.0
+    if measurement > 2.0
+        image = cv2.flip(image,1)
+        measurement = measurement * -1.0
 
-    return image, measurement
-    #else:
-    #    return None, None
+        return image, measurement
+    else:
+        return None, None
 
 def random_translation(image, measurement, trans_range):
-    #if np.random.rand() > 0.8:
-    rows,cols,ch = image.shape
-    tr_x = trans_range*np.random.uniform()-trans_range/2
-    tr_y = trans_range*np.random.uniform()-trans_range/2
-    Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
+    if np.random.rand() > 0.8:
+        rows,cols,ch = image.shape
+        tr_x = trans_range*np.random.uniform()-trans_range/2
+        tr_y = trans_range*np.random.uniform()-trans_range/2
+        Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
 
-    image = cv2.warpAffine(image,Trans_M,(cols,rows))
-    measurement += tr_x * 0.002
+        image = cv2.warpAffine(image,Trans_M,(cols,rows))
+        measurement += tr_x * 0.002
 
-    return image, measurement
+        return image, measurement
 
-    #else: 
-    #    return None, None
+    else: 
+        return None, None
 
 def random_brightness(image):
-    #if np.random.rand() > 0.8:
+    if np.random.rand() > 0.8:
 
-    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        
+        random_value = np.random.rand()
+
+        if random_value > 0.5:
+            ratio = 1 + random_value - 0.5
+        else:
+            ratio = random_value
+        
+        hsv[:,:,2] =  hsv[:,:,2] * ratio
+        image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
     
-    random_value = np.random.rand()
-
-    if random_value > 0.5:
-        ratio = 1 + random_value - 0.5
+        return image
     else:
-        ratio = random_value
-    
-    hsv[:,:,2] =  hsv[:,:,2] * ratio
-    image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
-    
-    return image
+        return None
 
 def add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements):
     if augmented_image is not None:
