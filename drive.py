@@ -65,11 +65,11 @@ def telemetry(sid, data):
 
         #throttle = controller.update(float(speed))
 
-        speed_limit = 20.0
+        speed_limit = 29.0
         if float(speed) > speed_limit:
             speed_limit = 5.0  # slow down
         else:
-            speed_limit = 20.0
+            speed_limit = 29.0
 
         throttle = 1.0 - steering_angle**2 - (float(speed)/speed_limit)**2
         print(steering_angle, throttle)
