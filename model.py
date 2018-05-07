@@ -107,11 +107,11 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
-        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
+       # augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        #augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        augmented_image = random_brightness(image)
-        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
+        #augmented_image = random_brightness(image)
+        #augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
         #augmented_images.append(augmented_image)
         #augmented_measurements.append(augmented_measurement)
