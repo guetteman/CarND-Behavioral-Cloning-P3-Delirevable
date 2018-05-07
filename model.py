@@ -58,7 +58,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.8:
+    if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -159,7 +159,7 @@ from keras.optimizers import Adam
 
 model = Sequential()
 model.add(Lambda(lambda x: x / 255.0 - 0.5, input_shape=(160, 320, 3)))
-model.add(Cropping2D(cropping=((50,25),(10,10))))
+model.add(Cropping2D(cropping=((70,25),(0,0))))
 model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation='relu'))
 model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation='relu'))
 model.add(Convolution2D(48, 5, 5, subsample=(2,2), activation='relu'))
@@ -171,7 +171,7 @@ model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
-model.compile(loss='mse', optimizer='adam', lr=1.0e-4)
+model.compile(loss='mse', optimizer='adam')
 # model.fit_generator(train_generator, samples_per_epoch= len(train_images), validation_data=validation_generator, validation_steps=len(validation_images), nb_epoch=5, verbose = 1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
