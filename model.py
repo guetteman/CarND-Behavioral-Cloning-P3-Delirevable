@@ -49,7 +49,7 @@ def get_images(lines, base_path):
 
 def random_flip(image, measurement):
     #if np.random.rand() > 0.4:
-    if measurement > 2.0
+    if measurement > 2.0 or measurement < -2.0:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
