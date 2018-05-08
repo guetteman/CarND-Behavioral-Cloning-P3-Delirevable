@@ -176,7 +176,7 @@ model.compile(loss='mse', optimizer='adam')
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=5, verbose=1)
 
 #Train model
 model.save('model.h5')
