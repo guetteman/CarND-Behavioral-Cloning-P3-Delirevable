@@ -19,6 +19,7 @@ def load_data_from_csv(csv_file):
         return data
 
 def angle_correction(measurement, index):
+    '''
     if measurement > 0.1:
         if index == 1:
             measurement = measurement + 0.3
@@ -30,10 +31,11 @@ def angle_correction(measurement, index):
         elif index == 2:
             measurement = measurement - 0.3
     else:
-        if index == 1:
-            measurement = measurement + 0.2
-        elif index == 2:
-            measurement = measurement - 0.2
+    '''
+    if index == 1:
+        measurement = measurement + 0.2
+    elif index == 2:
+        measurement = measurement - 0.2
     
     return measurement
 
