@@ -19,12 +19,12 @@ def load_data_from_csv(csv_file):
         return data
 
 def angle_correction(measurement, index):
-    if measurement > 0.15:
+    if measurement > 0.1:
         if index == 1:
             measurement = measurement + 0.3
         elif index == 2:
             measurement = measurement - 0.1
-    elif measurement < -0.15:
+    elif measurement < -0.1:
         if index == 1:
             measurement = measurement + 0.1
         elif index == 2:
@@ -69,7 +69,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.5 and (measurement > 0.15 or measurement < -0.15):
+    if np.random.rand() > 0.3 and (measurement > 0.15 or measurement < -0.15):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
