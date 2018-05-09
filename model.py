@@ -41,7 +41,7 @@ def get_images(lines, base_path):
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            if (np.random.rand() > 0.9 and float(line[3]) < 0.0005 and float(line[3]) > -0.0005) or (float(line[3]) >= 0.0005 or float(line[3]) <= -0.0005):
+            if (np.random.rand() > 0.5 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
 
                 image = cv2.imread(current_path)
                 images.append(image)
@@ -70,7 +70,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.2 and (measurement > 0.005 or measurement < -0.005):
+    if np.random.rand() > 0.2:
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -85,7 +85,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image, measurement):
-    if (measurement > 0.005 or measurement < -0.005):
+    if (measurement > 0.05 or measurement < -0.05):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
