@@ -59,7 +59,7 @@ def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
   plt.savefig('./images/augmented-dataset-distribution.png')
 
 def random_flip(image, measurement):
-    if measurement > 0.05 or measurement < -0.05:
+    if measurement > 0.5 or measurement < -0.5:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
@@ -68,7 +68,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.75 and (measurement > 0.05 or measurement < -0.05):
+    if np.random.rand() > 0.9 and (measurement > 0.05 or measurement < -0.05):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -83,7 +83,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image, measurement):
-    if np.random.rand() > 0.75 and (measurement > 0.05 or measurement < -0.05):
+    if np.random.rand() > 0.9 and (measurement > 0.05 or measurement < -0.05):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
