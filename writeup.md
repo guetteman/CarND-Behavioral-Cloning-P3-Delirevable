@@ -18,7 +18,7 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./examples/placeholder.png "Model Visualization"
+[image1]: ./images/data-distribution.png "Data Distribution"
 [image2]: ./examples/placeholder.png "Grayscaling"
 [image3]: ./examples/placeholder_small.png "Recovery Image"
 [image4]: ./examples/placeholder_small.png "Recovery Image"
@@ -38,10 +38,32 @@ Using the Udacity provided simulator and my drive.py file, the car can be driven
 python drive.py model.h5
 ```
 
-
 The model.py file contains the code for training and saving the convolution neural network. The file shows the pipeline I used for training and validating the model, and it contains comments to explain how the code works.
 
+### Data Collection Tactics
+
+I started to collecting my own data from track 1 and track 2, always following the center of the road, it was a little hard to control de car with the mouse but it was a better approach than use the keyboard, more natural. After make so many tests (like 10), I decided to use the udacity sample training data and then I added data from **track 2**.
+
+I drove the car in track 2 following the next rules:
+
+- Trying to stay in the center of the road as much as possible
+- For some curves I tried to simulate recovery situations.
+
+### Data Visualization
+
+If we see the distribution of the dataset, we will see that most of data is centered in 0 value:
+
+![alt text][image1]
+
+From a total of 11479 lines on csv file, 4698 lines have a steering angle of 0. So, We have to make a data augmentation to improve data distribution.
+
+### Data Augmentation
+
+
+
 ### Model Architecture and Training Strategy
+
+I started to  
 
 #### 1. An appropriate model architecture has been employed
 
