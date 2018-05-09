@@ -47,8 +47,16 @@ def get_images(lines, base_path):
     
     return images,measurements
 
+def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
+  
+  plt.figure(figsize=(15,7))
+  plt.ylabel(ylabel, fontsize=18)
+  plt.xlabel(xlabel, fontsize=16)
+  plt.bar(x, y, width, color=color)
+  plt.show()
+
 def random_flip(image, measurement):
-    if measurement > 0.15 or measurement < -0.15:
+    if measurement > 0.05 or measurement < -0.05:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
@@ -57,7 +65,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.5 and (measurement > 0.15 or measurement < -0.15):
+    if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -72,7 +80,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image):
-    if np.random.rand() > 0.5:
+    if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
@@ -141,6 +149,10 @@ images, measurements = get_images(lines, 'data/IMG/')
 
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
+
+_classes, counts = np.unique(augmented_measurements, return_counts=True)
+
+plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.7, 'blue')
 
 train_images, validation_images, train_measurements, validation_measurements = train_test_split(augmented_images, augmented_measurements, test_size=0.20)
 
