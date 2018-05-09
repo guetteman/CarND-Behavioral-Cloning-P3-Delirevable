@@ -48,7 +48,7 @@ def get_images(lines, base_path):
 
                 # angle corrections
                 measurement = angle_correction(float(line[3]), i)
-                measurements.append(float(line[3]))
+                measurements.append(round(measurement, 2))
     
     return images,measurements
 
@@ -77,7 +77,7 @@ def random_translation(image, measurement, trans_range):
         Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
 
         image = cv2.warpAffine(image,Trans_M,(cols,rows))
-        measurement += tr_x * 0.001
+        measurement += round(tr_x * 0.001, 2)
 
         return image, measurement
 
@@ -122,13 +122,13 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-        for i in range(1):
-            augmented_image, augmented_measurement = random_translation(image, measurement, 3)
-            augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
+
+        augmented_image, augmented_measurement = random_translation(image, measurement, 3)
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        for i in range(1):
-            augmented_image = random_brightness(image, measurement)
-            augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
+
+        augmented_image = random_brightness(image, measurement)
+        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
     return augmented_images,augmented_measurements
 
