@@ -35,20 +35,19 @@ def get_images(lines, base_path):
     measurements = []
 
     for line in lines:
-        for i in range(1):
+        for i in range(3):
 
             source_path = line[i]
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            if (np.random.rand() > 0.2 and float(line[3]) < 0.05 and float(line[3]) > -0.05) 
-            or (float(line[3]) >= 0.05 and float(line[3]) <= -0.05):
+            if (np.random.rand() > 0.8 and float(line[3]) < 0.0005 and float(line[3]) > -0.0005) or (float(line[3]) >= 0.0005 or float(line[3]) <= -0.0005):
 
                 image = cv2.imread(current_path)
                 images.append(image)
 
                 # angle corrections
-                #measurement = angle_correction(float(line[3]), i)
+                measurement = angle_correction(float(line[3]), i)
                 measurements.append(float(line[3]))
     
     return images,measurements
@@ -62,7 +61,7 @@ def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
   plt.savefig('./images/augmented-dataset-distribution.png')
 
 def random_flip(image, measurement):
-    if measurement > 0.3 or measurement < -0.3:
+    if measurement > 0.005 or measurement < -0.005:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
@@ -71,7 +70,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
+    if np.random.rand() > 0.2 and (measurement > 0.005 or measurement < -0.005):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -86,7 +85,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image, measurement):
-    if (measurement > 0.2 or measurement < -0.2):
+    if (measurement > 0.005 or measurement < -0.005):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
@@ -123,11 +122,11 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-        for i in range(5):
+        for i in range(1):
             augmented_image, augmented_measurement = random_translation(image, measurement, 3)
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        for i in range(5):
+        for i in range(1):
             augmented_image = random_brightness(image, measurement)
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
@@ -160,7 +159,7 @@ augmented_images, augmented_measurements = augment_data(images, measurements)
 
 _classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
 
-plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.2, 'blue')
+plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.001, 'blue')
 
 train_images, validation_images, train_measurements, validation_measurements = train_test_split(augmented_images, augmented_measurements, test_size=0.20)
 
