@@ -115,9 +115,6 @@ def augment_data(images, measurements):
         augmented_image = random_brightness(image)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
-        #augmented_images.append(augmented_image)
-        #augmented_measurements.append(augmented_measurement)
-
     return augmented_images,augmented_measurements
 
 def generator(images, measurements, batch_size=32):
@@ -133,6 +130,8 @@ def generator(images, measurements, batch_size=32):
             X_train = np.array(batch_images)
             y_train = np.array(batch_measurements)
             yield sklearn.utils.shuffle(X_train, y_train)
+
+#Main code
 
 # Load images paths from csv file
 lines = load_data_from_csv('data/driving_log.csv')
@@ -171,7 +170,6 @@ model.add(Dense(10))
 model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
-# model.fit_generator(train_generator, samples_per_epoch= len(train_images), validation_data=validation_generator, validation_steps=len(validation_images), nb_epoch=5, verbose = 1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
