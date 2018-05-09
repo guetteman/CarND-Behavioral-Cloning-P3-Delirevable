@@ -41,12 +41,15 @@ def get_images(lines, base_path):
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            image = cv2.imread(current_path)
-            images.append(image)
+            if (np.random.rand() > 0.2 and float(line[3]) < 0.05 and float(line[3]) > -0.05) 
+            or (float(line[3]) >= 0.05 and float(line[3]) <= -0.05):
 
-            # angle corrections
-            #measurement = angle_correction(float(line[3]), i)
-            measurements.append(float(line[3]))
+                image = cv2.imread(current_path)
+                images.append(image)
+
+                # angle corrections
+                #measurement = angle_correction(float(line[3]), i)
+                measurements.append(float(line[3]))
     
     return images,measurements
 
@@ -68,14 +71,14 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if (measurement > 0.05 or measurement < -0.05):
+    if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
         Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
 
         image = cv2.warpAffine(image,Trans_M,(cols,rows))
-        measurement += tr_x * 0.002
+        measurement += tr_x * 0.001
 
         return image, measurement
 
@@ -157,7 +160,7 @@ augmented_images, augmented_measurements = augment_data(images, measurements)
 
 _classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
 
-plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.7, 'blue')
+plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.2, 'blue')
 
 train_images, validation_images, train_measurements, validation_measurements = train_test_split(augmented_images, augmented_measurements, test_size=0.20)
 
