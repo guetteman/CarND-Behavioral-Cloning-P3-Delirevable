@@ -59,7 +59,7 @@ def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
   plt.savefig('./images/augmented-dataset-distribution.png')
 
 def random_flip(image, measurement):
-    if measurement > 0.5 or measurement < -0.5:
+    if measurement > 0.3 or measurement < -0.3:
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
@@ -68,7 +68,7 @@ def random_flip(image, measurement):
         return None, None
 
 def random_translation(image, measurement, trans_range):
-    if (measurement > 0.15 or measurement < -0.15):
+    if (measurement > 0.05 or measurement < -0.05):
         rows,cols,ch = image.shape
         tr_x = trans_range*np.random.uniform()-trans_range/2
         tr_y = trans_range*np.random.uniform()-trans_range/2
@@ -83,7 +83,7 @@ def random_translation(image, measurement, trans_range):
         return None, None
 
 def random_brightness(image, measurement):
-    if (measurement > 0.5 or measurement < -0.5):
+    if (measurement > 0.2 or measurement < -0.2):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
         
@@ -120,11 +120,11 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_flip(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
-        for i in range(3):
-            augmented_image, augmented_measurement = random_translation(image, measurement, 5)
+        for i in range(5):
+            augmented_image, augmented_measurement = random_translation(image, measurement, 3)
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        for i in range(3):
+        for i in range(5):
             augmented_image = random_brightness(image, measurement)
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
