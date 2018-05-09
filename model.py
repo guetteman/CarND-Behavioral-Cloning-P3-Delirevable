@@ -4,6 +4,9 @@ import sklearn
 from sklearn.utils import shuffle
 from sklearn.model_selection import train_test_split
 import numpy as np
+import matplotlib
+matplotlib.use('agg')
+import matplotlib.pyplot as plt
 
 # Definitions
 
@@ -53,7 +56,7 @@ def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
   plt.ylabel(ylabel, fontsize=18)
   plt.xlabel(xlabel, fontsize=16)
   plt.bar(x, y, width, color=color)
-  plt.show()
+  plt.savefig('./images/augmented-dataset-distribution.png')
 
 def random_flip(image, measurement):
     if measurement > 0.05 or measurement < -0.05:
@@ -79,7 +82,7 @@ def random_translation(image, measurement, trans_range):
     else: 
         return None, None
 
-def random_brightness(image):
+def random_brightness(image, measurement):
     if np.random.rand() > 0.5 and (measurement > 0.05 or measurement < -0.05):
 
         hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
@@ -120,7 +123,7 @@ def augment_data(images, measurements):
         augmented_image, augmented_measurement = random_translation(image, measurement, 5)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
-        augmented_image = random_brightness(image)
+        augmented_image = random_brightness(image, measurement)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
     return augmented_images,augmented_measurements
@@ -150,7 +153,7 @@ images, measurements = get_images(lines, 'data/IMG/')
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
 
-_classes, counts = np.unique(augmented_measurements, return_counts=True)
+_classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
 
 plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.7, 'blue')
 
