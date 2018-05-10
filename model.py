@@ -202,7 +202,7 @@ checkpoint = ModelCheckpoint(
     './output/model-{epoch:03d}.h5', 
     monitor='val_loss', 
     verbose=0, 
-    save_best_only=True, 
+    save_best_only=False, 
     save_weights_only=False, 
     mode='auto', 
     period=1)
