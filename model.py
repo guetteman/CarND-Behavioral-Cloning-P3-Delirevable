@@ -120,7 +120,7 @@ def augment_data(images, measurements, _classes, counts):
         augmented_measurements.append(measurement)
         
         i, = np.where(_classes == measurement)
-        if counts[i] < 600:
+        if counts[i] < 300:
             augmented_image, augmented_measurement = random_flip(image, measurement)
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
