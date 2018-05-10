@@ -41,7 +41,7 @@ def get_images(lines, base_path):
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            if (np.random.rand() > 0.5 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
+            if (np.random.rand() > 0.6 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
 
                 image = cv2.imread(current_path)
                 images.append(image)
