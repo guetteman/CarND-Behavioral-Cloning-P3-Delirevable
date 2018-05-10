@@ -206,7 +206,7 @@ model.summary()
 model.compile(optimizer=Adam(), loss='mse')
 
 checkpoint = ModelCheckpoint(
-    'model.h5', 
+    'model-{epoch:03d}.h5', 
     monitor='val_loss', 
     verbose=0, 
     save_best_only=True, 
@@ -216,6 +216,6 @@ checkpoint = ModelCheckpoint(
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=4, callbacks=[checkpoint], verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=10, callbacks=[checkpoint], verbose=1)
 
 #model.save('model.h5')
