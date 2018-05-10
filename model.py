@@ -199,7 +199,7 @@ model.summary()
 model.compile(optimizer=Adam(), loss='mse')
 
 checkpoint = ModelCheckpoint(
-    './output/model-{epoch:03d}.h5', 
+    'model.h5', 
     monitor='val_loss', 
     verbose=0, 
     save_best_only=True, 
