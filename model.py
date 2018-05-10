@@ -209,7 +209,7 @@ model.add(Dense(10, activation='elu'))
 model.add(Dense(1))
 model.summary()
 
-model.compile(loss='mse', optimizer='adam')
+model.compile(optimizer=Adam(lr=1e-4), loss='mse')
 
 checkpoint = ModelCheckpoint(
     'model-{epoch:03d}.h5', 
