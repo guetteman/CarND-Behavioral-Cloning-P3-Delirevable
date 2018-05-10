@@ -155,7 +155,7 @@ lines = load_data_from_csv('data/driving_log.csv')
 images, measurements = get_images(lines, 'data/IMG/')
 
 # Plotting Raw Data
-_classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
+_classes, counts = np.unique(np.array(measurements), return_counts=True)
 plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.002, 'blue', './images/dataset-distribution.png')
 
 # Data augmentation
