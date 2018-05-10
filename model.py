@@ -41,7 +41,7 @@ def get_images(lines, base_path):
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            if (np.random.rand() > 0.95 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
+            if (np.random.rand() > 0.5 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
 
                 image = cv2.imread(current_path)
                 images.append(image)
@@ -52,13 +52,13 @@ def get_images(lines, base_path):
     
     return images,measurements
 
-def plot_distribution_chart(x, y, xlabel, ylabel, width, color):
+def plot_distribution_chart(x, y, xlabel, ylabel, width, color, location):
   
-  plt.figure(figsize=(15,7))
-  plt.ylabel(ylabel, fontsize=18)
-  plt.xlabel(xlabel, fontsize=16)
-  plt.bar(x, y, width, color=color)
-  plt.savefig('./images/augmented-dataset-distribution.png')
+    plt.figure(figsize=(15,7))
+    plt.ylabel(ylabel, fontsize=18)
+    plt.xlabel(xlabel, fontsize=16)
+    plt.bar(x, y, width, color=color)
+    plt.savefig(location)
 
 def random_flip(image, measurement):
     if measurement > 0.005 or measurement < -0.005:
@@ -123,7 +123,7 @@ def augment_data(images, measurements):
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
 
-        augmented_image, augmented_measurement = random_translation(image, measurement, 3)
+        augmented_image, augmented_measurement = random_translation(image, measurement, 5)
         augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
         
 
@@ -154,12 +154,16 @@ lines = load_data_from_csv('data/driving_log.csv')
 # Fix images path to use in another machine like AWS
 images, measurements = get_images(lines, 'data/IMG/')
 
+# Plotting Raw Data
+_classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
+plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.002, 'blue', './images/dataset-distribution.png')
+
 # Data augmentation
 augmented_images, augmented_measurements = augment_data(images, measurements)
 
+# Plotting augmented data
 _classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
-
-plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.001, 'blue')
+plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.002, 'blue', './images/augmented-dataset-distribution.png')
 
 train_images, validation_images, train_measurements, validation_measurements = train_test_split(augmented_images, augmented_measurements, test_size=0.20)
 
@@ -188,7 +192,7 @@ model.add(Dense(50))
 model.add(Dense(10))
 model.add(Dense(1))
 
-model.compile(loss='mse', optimizer='adam')
+model.compile(loss='mse', optimizer='adam', lr=1.0e-4)
 
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
