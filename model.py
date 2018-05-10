@@ -110,7 +110,7 @@ def add_to_augmented_data(augmented_image, augmented_measurement, augmented_imag
     
     return augmented_images, augmented_measurements
 
-def augment_data(images, measurements):
+def augment_data(images, measurements, _classes, counts):
 
     augmented_images, augmented_measurements = [], []
 
@@ -119,8 +119,10 @@ def augment_data(images, measurements):
         augmented_images.append(image)
         augmented_measurements.append(measurement)
         
-        augmented_image, augmented_measurement = random_flip(image, measurement)
-        augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
+        i, = np.where(_classes == measurement)
+        if counts[i] < 600:
+            augmented_image, augmented_measurement = random_flip(image, measurement)
+            augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)        
 
 
         augmented_image, augmented_measurement = random_translation(image, measurement, 5)
@@ -159,7 +161,7 @@ _classes, counts = np.unique(np.array(measurements), return_counts=True)
 plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.002, 'blue', './images/dataset-distribution.png')
 
 # Data augmentation
-augmented_images, augmented_measurements = augment_data(images, measurements)
+augmented_images, augmented_measurements = augment_data(images, measurements, _classes, counts)
 
 # Plotting augmented data
 _classes, counts = np.unique(np.array(augmented_measurements), return_counts=True)
