@@ -179,6 +179,7 @@ from keras.layers import Flatten, Dense, Lambda, Cropping2D
 from keras.layers.convolutional import Convolution2D
 from keras.layers.pooling import MaxPooling2D
 from keras.optimizers import Adam
+from keras.callbacks import ModelCheckpoint
 
 model = Sequential()
 model.add(Lambda(lambda x: x / 127.5 - 1.0, input_shape=(160, 320, 3)))
@@ -196,9 +197,18 @@ model.add(Dense(1))
 
 model.compile(loss='mse', optimizer='adam')
 
+checkpoint = ModelCheckpoint(
+    './output/model-{epoch:03d}.h5', 
+    monitor='val_loss', 
+    verbose=0, 
+    save_best_only=False, 
+    save_weights_only=False, 
+    mode='auto', 
+    period=1)
+
 model.fit_generator(train_generator, samples_per_epoch= \
                  len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=5, verbose=1)
+                 nb_val_samples=len(validation_images), nb_epoch=5, callbacks=[checkpoint], verbose=1)
 
 #Train model
 model.save('model.h5')
