@@ -41,7 +41,7 @@ def get_images(lines, base_path):
             filename = source_path.split('/')[-1]
             current_path = base_path + filename
 
-            if (np.random.rand() > 0.4 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
+            if (np.random.rand() > 0.2 and float(line[3]) < 0.005 and float(line[3]) > -0.005) or (float(line[3]) >= 0.005 or float(line[3]) <= -0.005):
 
                 image = cv2.imread(current_path)
                 images.append(image)
@@ -131,7 +131,7 @@ def augment_data(images, measurements, _classes, counts):
             augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, measurement, augmented_images, augmented_measurements)
 
         if counts[i] < 100:
-            for i in range(3):
+            for i in range(4):
 
                 augmented_image, augmented_measurement = random_translation(image, measurement, 5)
                 augmented_images, augmented_measurement = add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
