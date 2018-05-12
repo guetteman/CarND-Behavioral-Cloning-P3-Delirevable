@@ -113,27 +113,12 @@ def augment_data(images, measurements, _classes, counts):
         max_counts = np.amax(counts)
         i, = np.where(_classes == measurement)
 
-        if counts[i]/max_counts < 0.05:
-            for i in range(10):
-                augmented_image, augmented_measurement = random_flip(image, measurement)
-                augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
-                augmented_image = random_brightness(augmented_image)
-                
-                add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
-
-        if counts[i]/max_counts < 0.1:
+        if counts[i]/max_counts < 0.2:
             for i in range(5):
                 augmented_image, augmented_measurement = random_flip(image, measurement)
                 augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
                 augmented_image = random_brightness(augmented_image)
                 
-                add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
-        if counts[i]/max_counts < 0.3:
-            for i in range(3):
-                augmented_image, augmented_measurement = random_flip(image, measurement)
-                augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
-                augmented_image = random_brightness(augmented_image)
-
                 add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
 
     return augmented_images,augmented_measurements
