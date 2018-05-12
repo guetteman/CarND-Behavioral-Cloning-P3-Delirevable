@@ -7,6 +7,7 @@ import numpy as np
 import matplotlib
 matplotlib.use('agg')
 import matplotlib.pyplot as plt
+import random
 
 # Definitions
 
@@ -65,9 +66,7 @@ def random_flip(image, measurement):
         image = cv2.flip(image,1)
         measurement = measurement * -1.0
 
-        return image, measurement
-    else:
-        return None, None
+    return image, measurement 
 
 def random_translation(image, measurement, trans_range):
     rows,cols,ch = image.shape
@@ -118,7 +117,7 @@ def augment_data(images, measurements, _classes, counts):
             for i in range(5):
                 augmented_image, augmented_measurement = random_flip(image, measurement)
                 augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
-                augmented_image = random_brightness(augmented_image, augmented_measurement)
+                augmented_image = random_brightness(augmented_image)
                 
                 add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
 
@@ -132,20 +131,17 @@ def augment_data(images, measurements, _classes, counts):
 
     return augmented_images,augmented_measurements
 
-def generator(lines, batch_size=32, training=False):
-    
-    num_samples = len(images)
+def generator(lines, batch_size=32):
     
     while 1:
 
         for offset in range(0, len(lines), batch_size):
             batch_lines = lines[offset:offset+batch_size]
 
-            batch_images, batch_measurements = get_images(lines, 'data/IMG/')
+            batch_images, batch_measurements = get_images(batch_lines, 'data/IMG/')
 
-            if training:
-                _classes, counts = np.unique(np.array(batch_measurements), return_counts=True)
-                batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
+            _classes, counts = np.unique(np.array(batch_measurements), return_counts=True)
+            batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
 
             X_train = np.array(batch_images)
             y_train = np.array(batch_measurements)
@@ -158,10 +154,11 @@ def generator(lines, batch_size=32, training=False):
 
 # Load images paths from csv file
 lines = load_data_from_csv('data/driving_log.csv')
+train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 
 # compile and train the model using the generator function
-train_generator = generator(lines, batch_size=1000, training=True)
-train_generator = generator(lines, batch_size=1000)
+train_generator = generator(train_samples, batch_size=32)
+validation_generator = generator(validation_samples, batch_size=32)
 
 # Build network
 from keras.models import Sequential
@@ -198,5 +195,5 @@ checkpoint = ModelCheckpoint(
     period=1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
-                 len(train_images), validation_data=validation_generator, \
-                 nb_val_samples=len(validation_images), nb_epoch=10, callbacks=[checkpoint], verbose=1)
+                 len(train_samples)*10, validation_data=validation_generator, \
+                 nb_val_samples=len(validation_samples)*10, nb_epoch=10, callbacks=[checkpoint], verbose=1)
