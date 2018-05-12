@@ -196,5 +196,5 @@ checkpoint = ModelCheckpoint(
     period=1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
-                 len(train_samples)*10, validation_data=validation_generator, \
-                 nb_val_samples=len(validation_samples)*10, nb_epoch=10, callbacks=[checkpoint], verbose=1)
+                 len(train_samples)*15, validation_data=validation_generator, \
+                 nb_val_samples=len(validation_samples)*15, nb_epoch=10, callbacks=[checkpoint], verbose=1)
