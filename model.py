@@ -187,14 +187,14 @@ model.summary()
 model.compile(optimizer=Adam(), loss='mse')
 
 checkpoint = ModelCheckpoint(
-    'model-{epoch:03d}.h5', 
+    'model.h5', 
     monitor='val_loss', 
     verbose=0, 
-    save_best_only=False, 
+    save_best_only=True, 
     save_weights_only=False, 
     mode='auto', 
     period=1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
-                 len(train_samples)*15, validation_data=validation_generator, \
-                 nb_val_samples=len(validation_samples)*15, nb_epoch=10, callbacks=[checkpoint], verbose=1)
+                 len(train_samples)*20, validation_data=validation_generator, \
+                 nb_val_samples=len(validation_samples)*20, nb_epoch=10, callbacks=[checkpoint], verbose=1)
