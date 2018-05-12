@@ -133,14 +133,15 @@ def augment_data(images, measurements, _classes, counts):
 
 def generator(lines, batch_size=32):
     
+    images, measurements = get_images(lines, 'data/IMG/')
+
     while 1:
 
         for offset in range(0, len(lines), batch_size):
-            batch_lines = lines[offset:offset+batch_size]
+            batch_images = images[offset:offset+batch_size]
+            batch_measurements = measurements[offset:offset+batch_size]
 
-            batch_images, batch_measurements = get_images(batch_lines, 'data/IMG/')
-
-            _classes, counts = np.unique(np.array(batch_measurements), return_counts=True)
+            _classes, counts = np.unique(np.array(measurements), return_counts=True)
             batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
 
             X_train = np.array(batch_images)
