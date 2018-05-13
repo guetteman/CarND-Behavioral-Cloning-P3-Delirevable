@@ -113,8 +113,8 @@ def augment_data(images, measurements, _classes, counts):
         max_counts = np.amax(counts)
         i, = np.where(_classes == measurement)
 
-        if counts[i]/max_counts < 0.2:
-            for i in range(5):
+        if counts[i]/max_counts < 0.1:
+            for i in range(10):
                 augmented_image, augmented_measurement = random_flip(image, measurement)
                 augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
                 augmented_image = random_brightness(augmented_image)
@@ -125,16 +125,15 @@ def augment_data(images, measurements, _classes, counts):
 
 def generator(lines, batch_size=32):
     
-    images, measurements = get_images(lines, 'data1/IMG/')
-    _classes, counts = np.unique(np.array(measurements), return_counts=True)
-    plot_distribution_chart(_classes, counts, 'Classes', '# Training Examples', 0.002, 'blue', './images/dataset-distribution.png')
-    
+    images, measurements = get_images(lines, 'data/IMG/')
+
     while 1:
 
         for offset in range(0, len(lines), batch_size):
             batch_images = images[offset:offset+batch_size]
             batch_measurements = measurements[offset:offset+batch_size]
 
+            _classes, counts = np.unique(np.array(measurements), return_counts=True)
             batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
 
             X_train = np.array(batch_images)
@@ -147,7 +146,7 @@ def generator(lines, batch_size=32):
 #Main code
 
 # Load images paths from csv file
-lines = load_data_from_csv('data1/driving_log.csv')
+lines = load_data_from_csv('data/driving_log.csv')
 train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 
 # compile and train the model using the generator function
@@ -183,11 +182,11 @@ checkpoint = ModelCheckpoint(
     'model-{epoch:03d}.h5', 
     monitor='val_loss', 
     verbose=0, 
-    save_best_only=True, 
+    save_best_only=False, 
     save_weights_only=False, 
     mode='auto', 
     period=1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
-                 len(train_samples)*15, validation_data=validation_generator, \
-                 nb_val_samples=len(validation_samples)*15, nb_epoch=10, callbacks=[checkpoint], verbose=1)
+                 len(train_samples)*7, validation_data=validation_generator, \
+                 nb_val_samples=len(validation_samples)*7, nb_epoch=10, callbacks=[checkpoint], verbose=1)
