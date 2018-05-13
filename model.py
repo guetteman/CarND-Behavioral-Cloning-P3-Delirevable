@@ -126,6 +126,8 @@ def augment_data(images, measurements, _classes, counts):
 def generator(lines, batch_size=32):
     
     images, measurements = get_images(lines, 'data/IMG/')
+    _classes, counts = np.unique(np.array(measurements), return_counts=True)
+    plot_distribution_chart(_classes, counts, "Steering Angle", "Counts", 0.002, "blue", "./images/data-distribution.png")
 
     while 1:
 
@@ -133,7 +135,6 @@ def generator(lines, batch_size=32):
             batch_images = images[offset:offset+batch_size]
             batch_measurements = measurements[offset:offset+batch_size]
 
-            _classes, counts = np.unique(np.array(measurements), return_counts=True)
             batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
 
             X_train = np.array(batch_images)
