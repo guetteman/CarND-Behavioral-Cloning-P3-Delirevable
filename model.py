@@ -114,7 +114,7 @@ def augment_data(images, measurements, _classes, counts):
         i, = np.where(_classes == measurement)
 
         if counts[i]/max_counts < 0.1:
-            for i in range(10):
+            for i in range(5):
                 augmented_image, augmented_measurement = random_flip(image, measurement)
                 augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
                 augmented_image = random_brightness(augmented_image)
@@ -188,5 +188,5 @@ checkpoint = ModelCheckpoint(
     period=1)
 
 model.fit_generator(train_generator, samples_per_epoch= \
-                 len(train_samples)*7, validation_data=validation_generator, \
-                 nb_val_samples=len(validation_samples)*7, nb_epoch=10, callbacks=[checkpoint], verbose=1)
+                 len(train_samples)*3*5, validation_data=validation_generator, \
+                 nb_val_samples=len(validation_samples)*3*5, nb_epoch=10, callbacks=[checkpoint], verbose=1)
