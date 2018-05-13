@@ -1,5 +1,9 @@
 # **Behavioral Cloning** 
 
+![alt text][image1]
+
+[Working Model Video](https://youtu.be/zE6Al_JM1Jw)
+
 ## Writeup
 
 ### This is the third project of self-driving cars engineer nanodegree. In this project we will train a car to follow a human good driving behavior.
@@ -18,13 +22,8 @@ The goals / steps of this project are the following:
 
 [//]: # (Image References)
 
-[image1]: ./images/data-distribution.png "Data Distribution"
-[image2]: ./examples/placeholder.png "Grayscaling"
-[image3]: ./examples/placeholder_small.png "Recovery Image"
-[image4]: ./examples/placeholder_small.png "Recovery Image"
-[image5]: ./examples/placeholder_small.png "Recovery Image"
-[image6]: ./examples/placeholder_small.png "Normal Image"
-[image7]: ./examples/placeholder_small.png "Flipped Image"
+[image1]: ./images/presentation.png "Behavioral Cloning"
+[image2]: ./images/data-distribution.png "Data Distribution with angle correction"
 
 ### My project includes the following files:
 * model.py containing the script to create and train the model
@@ -42,28 +41,83 @@ The model.py file contains the code for training and saving the convolution neur
 
 ### Data Collection Tactics
 
-I started to collecting my own data from track 1 and track 2, always following the center of the road, it was a little hard to control de car with the mouse but it was a better approach than use the keyboard, more natural. After make so many tests (like 10), I decided to use the udacity sample training data and then I added data from **track 2**.
+I started to collecting my own data from track 1 and track 2, always following the center of the road, it was a little hard to control de car with the mouse but it was a better approach than use the keyboard, more natural.
 
-I drove the car in track 2 following the next rules:
+I drove the car in track 1 following the next rules:
 
-- Trying to stay in the center of the road as much as possible
+- Trying to stay in the center of the road as much as possible.
+- Made one lap clockwise and one counter-clockwise for better generalization.
 - For some curves I tried to simulate recovery situations.
+
+At the end, after so many tests, when I added data from track 2 the model stop working on track one. So, I decided to use only track 1 data.
 
 ### Data Visualization
 
-If we see the distribution of the dataset, we will see that most of data is centered in 0 value:
+If we visualize the distribution of the dataset, we will see that most of data is centered in 0 value (the chart already has angle correction of 0.2 for left and right cameras):
 
-![alt text][image1]
+![alt text][image2]
 
-From a total of 11479 lines on csv file, 4698 lines have a steering angle of 0. So, We have to make a data augmentation to improve data distribution.
+From a total of 6013 lines on csv file, almost 1400 lines have a steering angle of 0. So, We have to make a data augmentation to improve data distribution.
 
 ### Data Augmentation
 
+For data augmentation, I decided to generate new images from the original ones, using random flip, random translation and random brightness strategies:
 
+```
+def random_flip(image, measurement):
+    if np.random.rand() > 0.5:
+        image = cv2.flip(image,1)
+        measurement = measurement * -1.0
+
+    return image, measurement 
+
+def random_translation(image, measurement, trans_range):
+    rows,cols,ch = image.shape
+    tr_x = trans_range*np.random.uniform()-trans_range/2
+    tr_y = trans_range*np.random.uniform()-trans_range/2
+    Trans_M = np.float32([[1,0,tr_x],[0,1,tr_y]])
+
+    image = cv2.warpAffine(image,Trans_M,(cols,rows))
+    measurement += round(tr_x * 0.002, 2)
+
+    return image, measurement
+
+def random_brightness(image):
+    hsv = cv2.cvtColor(image, cv2.COLOR_RGB2HSV)
+        
+    random_value = np.random.rand()
+
+    if random_value > 0.5:
+        ratio = 1 + random_value - 0.5
+    else:
+        ratio = random_value
+    
+    hsv[:,:,2] =  hsv[:,:,2] * ratio
+    image = cv2.cvtColor(hsv, cv2.COLOR_HSV2RGB)
+
+    return image
+```
+
+Then, only for values that has less of 10% of the max counts are augmented 5 times.
+
+```
+max_counts = np.amax(counts)
+        i, = np.where(_classes == measurement)
+
+        if counts[i]/max_counts < 0.1:
+            for i in range(5):
+                augmented_image, augmented_measurement = random_flip(image, measurement)
+                augmented_image, augmented_measurement = random_translation(augmented_image, augmented_measurement, 5)
+                augmented_image = random_brightness(augmented_image)
+                
+                add_to_augmented_data(augmented_image, augmented_measurement, augmented_images, augmented_measurements)
+```
+
+So, this will help to improve the dataset distribution. This process was done inside a generator, which I will explain later.
 
 ### Model Architecture and Training Strategy
 
-I started to  
+First I started to use the LeNet NN structure, but the model didn't work as expected. So, I changed to NVIDIA network which is a more powerful NN, here is the structure:
 
 ```
 Layer (type)                     Output Shape          Param #     Connected to                     
@@ -99,78 +153,91 @@ ________________________________________________________________________________
 
 ```
 
-#### 1. An appropriate model architecture has been employed
+I also cropped the images, so the car doesn't get confused with surrounding environment. Here is the code:
 
-My model consists of a convolution neural network with 3x3 filter sizes and depths between 32 and 128 (model.py lines 18-24) 
+```
+model = Sequential()
+model.add(Lambda(lambda x: x / 127.5 - 1.0, input_shape=(160, 320, 3)))
+model.add(Cropping2D(cropping=((70,25),(0,0))))
+model.add(Convolution2D(24, 5, 5, subsample=(2,2), activation='relu'))
+model.add(Convolution2D(36, 5, 5, subsample=(2,2), activation='relu'))
+model.add(Convolution2D(48, 5, 5, subsample=(2,2), activation='relu'))
+model.add(Convolution2D(64, 3, 3, activation='relu'))
+model.add(Convolution2D(64, 3, 3, activation='relu'))
+model.add(Flatten())
+model.add(Dense(100))
+model.add(Dense(50))
+model.add(Dense(10))
+model.add(Dense(1))
+```
 
-The model includes RELU layers to introduce nonlinearity (code line 20), and the data is normalized in the model using a Keras lambda layer (code line 18). 
+#### Attempts to reduce overfitting in the model
 
-#### 2. Attempts to reduce overfitting in the model
+One thing that I realized was that in training, the validation loss didn't reflect so well the real accuracy of the model. It was more like testing in the simulator until I found the best parameters. I found that **3 epochs** and a **default learning rate**  work with the data that I collected from track 1 (The model used an adam optimizer, so the learning rate was not tuned manually).
 
-The model contains dropout layers in order to reduce overfitting (model.py lines 21). 
+### Generators
 
-The model was trained and validated on different data sets to ensure that the model was not overfitting (code line 10-16). The model was tested by running it through the simulator and ensuring that the vehicle could stay on the track.
+At some point, the AWS server started to have memory issues. To solve this problem I used generators because this is much more memory-efficient. 
 
-#### 3. Model parameter tuning
+```
+def generator(lines, batch_size=32):
+    
+    images, measurements = get_images(lines, 'data/IMG/')
+    _classes, counts = np.unique(np.array(measurements), return_counts=True)
+    plot_distribution_chart(_classes, counts, "Steering Angle", "Counts", 0.002, "blue", "./images/data-distribution.png")
 
-The model used an adam optimizer, so the learning rate was not tuned manually (model.py line 25).
+    while 1:
 
-#### 4. Appropriate training data
+        for offset in range(0, len(lines), batch_size):
+            batch_images = images[offset:offset+batch_size]
+            batch_measurements = measurements[offset:offset+batch_size]
 
-Training data was chosen to keep the vehicle driving on the road. I used a combination of center lane driving, recovering from the left and right sides of the road ... 
+            batch_images, batch_measurements = augment_data(batch_images, batch_measurements, _classes, counts)
 
-For details about how I created the training data, see the next section. 
+            X_train = np.array(batch_images)
+            y_train = np.array(batch_measurements)
 
-### Model Architecture and Training Strategy
+            yield sklearn.utils.shuffle(X_train, y_train)
+```
 
-#### 1. Solution Design Approach
+This generator receive the lines from the csv and then:
 
-The overall strategy for deriving a model architecture was to ...
+- Loads images.
+- Plot Initial distribution chart.
+- For every batch, the data is augmented.
+- Finally, the features and labels are shuffled and returned.
 
-My first step was to use a convolution neural network model similar to the ... I thought this model might be appropriate because ...
+The same generator is used for training data and validation data, which means that the initial dataset is splitted before use it in generators.
 
-In order to gauge how well the model was working, I split my image and steering angle data into a training and validation set. I found that my first model had a low mean squared error on the training set but a high mean squared error on the validation set. This implied that the model was overfitting. 
+```
+# Load images paths from csv file
+lines = load_data_from_csv('data/driving_log.csv')
+train_samples, validation_samples = train_test_split(lines, test_size=0.2)
 
-To combat the overfitting, I modified the model so that ...
+# compile and train the model using the generator function
+train_generator = generator(train_samples, batch_size=32)
+validation_generator = generator(validation_samples, batch_size=32)
+```
 
-Then I ... 
+## Conclusion
 
-The final step was to run the simulator to see how well the car was driving around track one. There were a few spots where the vehicle fell off the track... to improve the driving behavior in these cases, I ....
+After soo many tests, I realized that this is the hardest project, by far, that I've made for Self-Driving Cars Nanodegree. Some key points are:
 
-At the end of the process, the vehicle is able to drive autonomously around the track without leaving the road.
+- How the data is recolected.
+- How is the data distribution.
+- Athough the strategy of augment only the data that has 10% of the max counts worked for track 1, the same strategy didn't work when I tried to add data from track 2.
+- At some point, trying to make a better distributed data, I started to cut some of zero angle data and it was really bad for model training. I realized that is better to have a not distributed final dataset than has a perfect dataset with less data from initial data.
+- Just collecting more data doesn't mean that you will have better model. You have to think very well on the strategy that you will use.
+- Generators are like magic when you don't has infinite resources (memory).
+- A small validation loss doesn't mean that the car will always stay on track. This could be overfitting and, in this case, there is a very thin line between underfitting and overfitting.
+- The speed is really important when you don't have a computer that can process data really fast.
 
-#### 2. Final Model Architecture
+## Future Improvements and tests.
 
-The final model architecture (model.py lines 18-24) consisted of a convolution neural network with the following layers and layer sizes ...
+- One idea that I had is to start first trying to complete track 2 and then go for track 1 as the last one is easier.
+- Recolect more data with simulator using a game controller (really hard to do it with mouse).
+- Cropping images in a different way.
+- Use YUV color space instead of RGB as NVIDIA paper suggests.
+- More ways to augment data.
 
-Here is a visualization of the architecture (note: visualizing the architecture is optional according to the project rubric)
-
-![alt text][image1]
-
-#### 3. Creation of the Training Set & Training Process
-
-To capture good driving behavior, I first recorded two laps on track one using center lane driving. Here is an example image of center lane driving:
-
-![alt text][image2]
-
-I then recorded the vehicle recovering from the left side and right sides of the road back to center so that the vehicle would learn to .... These images show what a recovery looks like starting from ... :
-
-![alt text][image3]
-![alt text][image4]
-![alt text][image5]
-
-Then I repeated this process on track two in order to get more data points.
-
-To augment the data sat, I also flipped images and angles thinking that this would ... For example, here is an image that has then been flipped:
-
-![alt text][image6]
-![alt text][image7]
-
-Etc ....
-
-After the collection process, I had X number of data points. I then preprocessed this data by ...
-
-
-I finally randomly shuffled the data set and put Y% of the data into a validation set. 
-
-I used this training data for training the model. The validation set helped determine if the model was over or under fitting. The ideal number of epochs was Z as evidenced by ... I used an adam optimizer so that manually training the learning rate wasn't necessary.
+# See you in the next project!
