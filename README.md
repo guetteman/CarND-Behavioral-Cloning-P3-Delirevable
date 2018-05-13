@@ -2,7 +2,7 @@
 
 ![alt text][image1]
 
-[Working Model Video](https://youtu.be/zE6Al_JM1Jw)
+<a href="https://youtu.be/zE6Al_JM1Jw" target="_blank">Working Model Video</a>
 
 ## Writeup
 
